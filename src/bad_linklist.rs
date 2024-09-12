@@ -48,6 +48,26 @@ impl LinkedList{
         // after taking some stuff from them.
         self.head = ListNode::Content(content);
     }
+
+    // in this case, since the function can either return something or "nothing",
+    // we need to return that as an optional
+    pub fn pop(&mut self) -> Option<i32>{
+
+        // without defining all the case in the enum,
+        // the complier can't identify the type of the variable
+        let result;
+
+        match &self.head {
+            ListNode::Nothing => {
+                result = None;
+            }
+            ListNode::Content(content) => {
+                result = Some(content.element);
+            }
+        };
+        
+        result
+    }
 }
 
 
