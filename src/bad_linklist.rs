@@ -16,18 +16,18 @@ enum ListNode{
 }
 
 // We also need a struct to locate the first reference of the list
-pub struct LinkedList{
+pub struct BadLinkedList{
     head: ListNode
 }
 
 use std::mem;
 
-impl LinkedList{
+impl BadLinkedList{
     // When we create an initial node, we need to insert a null reference,
     // so we have inserted the head with "Nothing", selected from the enum which represents a null pointer.
     // This is technically a constructor in other languages.
     pub fn new() -> Self {
-        LinkedList{head: ListNode::Nothing}
+        BadLinkedList{head: ListNode::Nothing}
     }
 
     pub fn push(&mut self, input: i32){
@@ -57,11 +57,12 @@ impl LinkedList{
         // the complier can't identify the type of the variable
         let result;
 
-        match &self.head {
+        match mem::replace(&mut self.head, ListNode::Nothing) {
             ListNode::Nothing => {
                 result = None;
             }
             ListNode::Content(content) => {
+                self.head = content.next;
                 result = Some(content.element);
             }
         };
@@ -70,4 +71,22 @@ impl LinkedList{
     }
 }
 
+mod bad_linklist_test{
+    use super::BadLinkedList;
 
+    #[test]
+    fn basics(){
+        let mut bad_linked_list = BadLinkedList::new();
+
+        assert_eq!(bad_linked_list.pop(), None);
+
+        bad_linked_list.push(69);
+        bad_linked_list.push(420);
+        bad_linked_list.push(314);
+
+        // tests:
+        assert_eq!(bad_linked_list.pop(), Some(314));
+        assert_eq!(bad_linked_list.pop(), Some(420));
+
+    }
+}
